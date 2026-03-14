@@ -1,0 +1,22 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "my-PV Cloud (API) einrichten",
+        "description": "Seriennummer und API-Token eingeben",
+        "data": {
+          "serialnumber": "Seriennummer",
+          "api_token": "API-Token"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Authentifizierung fehlgeschlagen",
+      "cannot_connect": "Verbindung zur API fehlgeschlagen",
+      "unknown": "Unbekannter Fehler"
+    },
+    "abort": {
+      "already_configured": "Gerät ist bereits eingerichtet"
+    }
+  }
+}

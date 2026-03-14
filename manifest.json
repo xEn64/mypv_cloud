@@ -1,0 +1,10 @@
+{
+  "domain": "mypv_cloudapi",
+  "name": "my-PV Cloudapi",
+  "version": "0.1.0",
+  "documentation": "https://api.my-pv.com/",
+  "requirements": [],
+  "codeowners": ["xEn64"],
+  "config_flow": true,
+  "iot_class": "cloud_polling"
+}

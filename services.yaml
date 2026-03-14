@@ -1,0 +1,61 @@
+set_power:
+  name: Set power
+  description: Setzt die Leistungsanforderung für das my-PV-Gerät.
+  fields:
+    entry_id:
+      name: Entry ID
+      description: Erforderlich, wenn mehrere my-PV-Geräte konfiguriert sind.
+      example: "01JABCDEF1234567890"
+      selector:
+        text:
+    power:
+      name: Leistung
+      description: Gewünschte Leistung in Watt.
+      required: true
+      example: 1800
+      selector:
+        number:
+          min: 0
+          max: 10000
+          step: 1
+          unit_of_measurement: W
+          mode: box
+    valid_for_minutes:
+      name: Gültigkeit
+      description: Dauer in Minuten.
+      required: true
+      example: 30
+      selector:
+        number:
+          min: 1
+          max: 1440
+          step: 1
+          unit_of_measurement: min
+          mode: box
+    time_boost_override:
+      name: Time boost override
+      example: 0
+      selector:
+        number:
+          min: 0
+          max: 1
+          step: 1
+          mode: box
+    time_boost_value:
+      name: Time boost value
+      example: 0
+      selector:
+        number:
+          min: 0
+          max: 10000
+          step: 1
+          mode: box
+    legionella_boost_block:
+      name: Legionella boost block
+      example: 1
+      selector:
+        number:
+          min: 0
+          max: 1
+          step: 1
+          mode: box

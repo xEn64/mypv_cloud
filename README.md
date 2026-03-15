@@ -41,3 +41,5 @@ Der aktuelle Entwicklungsstand konzentriert sich auf:
 
 Diese Integration ist für die **my-PV Cloud-API** vorgesehen.  
 Sie ist damit von lokalen Integrationen für Geräte wie AC THOR oder andere lokale Netzwerkschnittstellen abzugrenzen.
+
+alles mit chatgpt Erzeugt, läuft aber.

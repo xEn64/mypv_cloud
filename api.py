@@ -16,7 +16,7 @@ class MyPvApiAuthError(MyPvApiError):
 
 
 class MyPvApiClient:
-    """Minimal async client for my-PV."""
+    """Async client for my-PV cloud API."""
 
     def __init__(
         self,
@@ -31,9 +31,9 @@ class MyPvApiClient:
     @property
     def _headers(self) -> dict[str, str]:
         return {
-            "Authorization": f"Bearer {self._api_token}",
+            "Authorization": self._api_token,
+            "accept": "application/json",
             "Content-Type": "application/json",
-            "Accept": "application/json",
         }
 
     def _url(self, suffix: str) -> str:
@@ -55,33 +55,40 @@ class MyPvApiClient:
             raise MyPvApiError(f"Invalid JSON response: {text}") from err
 
     async def is_firmware_compatible(self) -> bool:
-        """Check firmware compatibility."""
         async with self._session.get(
             self._url("isFirmwareCompatible"),
             headers=self._headers,
             timeout=aiohttp.ClientTimeout(total=20),
         ) as response:
             data = await self._handle_response(response)
-
-        value = data.get("isFirmwareCompatible")
-        if isinstance(value, bool):
-            return value
-        if isinstance(value, str):
-            return value.lower() == "true"
-        return False
+            value = data.get("isFirmwareCompatible")
+            if isinstance(value, bool):
+                return value
+            if isinstance(value, str):
+                return value.lower() == "true"
+            return False
 
     async def get_data(self) -> dict[str, Any]:
-        """Fetch current device data."""
         async with self._session.get(
             self._url("data"),
             headers=self._headers,
             timeout=aiohttp.ClientTimeout(total=20),
         ) as response:
             data = await self._handle_response(response)
+            if not isinstance(data, dict):
+                raise MyPvApiError("Unexpected payload for /data")
+            return data
 
-        if not isinstance(data, dict):
-            raise MyPvApiError("Unexpected payload for /data")
-        return data
+    async def get_solar_forecast(self) -> dict[str, Any]:
+        async with self._session.get(
+            self._url("solarForecast"),
+            headers=self._headers,
+            timeout=aiohttp.ClientTimeout(total=20),
+        ) as response:
+            data = await self._handle_response(response)
+            if not isinstance(data, dict):
+                raise MyPvApiError("Unexpected payload for /solarForecast")
+            return data
 
     async def set_power(
         self,
@@ -91,7 +98,6 @@ class MyPvApiClient:
         time_boost_value: int = 0,
         legionella_boost_block: int = 1,
     ) -> dict[str, Any]:
-        """Set power for a given duration."""
         payload = {
             "power": int(power),
             "validForMinutes": int(valid_for_minutes),
@@ -107,15 +113,12 @@ class MyPvApiClient:
             timeout=aiohttp.ClientTimeout(total=20),
         ) as response:
             data = await self._handle_response(response)
-
-        if not isinstance(data, dict):
-            return {"result": data}
-        return data
+            if not isinstance(data, dict):
+                return {"result": data}
+            return data
 
     async def validate(self) -> dict[str, Any]:
-        """Validate credentials and basic device access."""
         compatible = await self.is_firmware_compatible()
         if not compatible:
             raise MyPvApiError("Firmware is not compatible for API usage")
-
         return await self.get_data()

@@ -2,7 +2,8 @@
 
 from datetime import timedelta
 
-DOMAIN = "mypv_cloudapi"
+# custom_components/mypv_cloud/const.py
+DOMAIN = "mypv_cloud"
 
 CONF_SERIALNUMBER = "serialnumber"
 CONF_API_TOKEN = "api_token"

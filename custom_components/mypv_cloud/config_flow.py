@@ -1,56 +1,48 @@
-"""Config flow for my-PV."""
-
+# custom_components/mypv_cloud/config_flow.py
 from __future__ import annotations
 
 import voluptuous as vol
-from homeassistant import config_entries
-from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
-from .api import MyPvApiAuthError, MyPvApiClient, MyPvApiError
+from homeassistant import config_entries
+from homeassistant.data_entry_flow import FlowResult
+
+from .api import MyPvApiClient, MyPvApiError
 from .const import CONF_API_TOKEN, CONF_SERIALNUMBER, DOMAIN
 
 
-class MyPvConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    """Handle a config flow for my-PV."""
-
+class MyPvCloudConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     VERSION = 1
 
-    async def async_step_user(self, user_input=None):
+    async def async_step_user(self, user_input=None) -> FlowResult:
         errors = {}
 
         if user_input is not None:
-            serialnumber = user_input[CONF_SERIALNUMBER]
-            api_token = user_input[CONF_API_TOKEN]
-
-            await self.async_set_unique_id(serialnumber)
+            await self.async_set_unique_id(user_input[CONF_SERIALNUMBER])
             self._abort_if_unique_id_configured()
 
-            session = async_get_clientsession(self.hass)
-            client = MyPvApiClient(session, serialnumber, api_token)
-
             try:
-                data = await client.validate()
-            except MyPvApiAuthError:
-                errors["base"] = "invalid_auth"
+                session = self.hass.helpers.aiohttp_client.async_get_clientsession()
+                api = MyPvApiClient(
+                    session=session,
+                    serialnumber=user_input[CONF_SERIALNUMBER],
+                    api_token=user_input[CONF_API_TOKEN],
+                )
+                await api.validate()
             except MyPvApiError:
                 errors["base"] = "cannot_connect"
-            except Exception:
-                errors["base"] = "unknown"
             else:
-                title = str(data.get("deviceName") or serialnumber)
                 return self.async_create_entry(
-                    title=title,
-                    data={
-                        CONF_SERIALNUMBER: serialnumber,
-                        CONF_API_TOKEN: api_token,
-                    },
+                    title=user_input[CONF_SERIALNUMBER],
+                    data=user_input,
                 )
 
-        schema = vol.Schema(
-            {
-                vol.Required(CONF_SERIALNUMBER): str,
-                vol.Required(CONF_API_TOKEN): str,
-            }
+        return self.async_show_form(
+            step_id="user",
+            data_schema=vol.Schema(
+                {
+                    vol.Required(CONF_SERIALNUMBER): str,
+                    vol.Required(CONF_API_TOKEN): str,
+                }
+            ),
+            errors=errors,
         )
-
-        return self.async_show_form(step_id="user", data_schema=schema, errors=errors)

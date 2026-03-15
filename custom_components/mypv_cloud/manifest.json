@@ -1,7 +1,7 @@
 {
   "domain": "mypv_cloud",
   "name": "my-PV Cloud",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "documentation": "https://api.my-pv.com/api-docs/",
   "issue_tracker": "https://github.com/xEn64/mypv_cloud/issues",
   "codeowners": ["@xEn64"],

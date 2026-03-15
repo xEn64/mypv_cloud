@@ -6,7 +6,7 @@ DOMAIN = "mypv_cloud"
 CONF_SERIALNUMBER = "serialnumber"
 CONF_API_TOKEN = "api_token"
 
-DEFAULT_SCAN_INTERVAL = timedelta(seconds=60)
+DEFAULT_SCAN_INTERVAL = timedelta(minutes=45)
 
 ATTR_POWER = "power"
 ATTR_VALID_FOR_MINUTES = "valid_for_minutes"
